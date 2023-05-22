@@ -19,14 +19,42 @@ db_user = os.getenv("DB_USER")
 db_password = os.getenv("DB_PASSWORD")
 
 
-conn = psycopg2.connect(
-    host=db_host,
-    port=db_port,
-    database=db_name,
-    user=db_user,
-    password=db_password
-)
+class DatabaseConnection:
+    _instance = None
 
+    def __new__(cls):
+        if not cls._instance:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
+    def __init__(self):
+        if not hasattr(self, "connection"):
+            # Replace the connection details with your own
+            self.connection = psycopg2.connect(
+                host=db_host,
+                port=db_port,
+                database=db_name,
+                user=db_user,
+                password=db_password
+            )
+            print(f"Database connected successfully to {db_host} with db name {db_name} ")
+    def cursor(self):
+        # check if connection is closed then reconnect
+        if self.connection.closed != 0:
+            self.reconnect()
+        return self.connection.cursor()
+    def commit(self):
+        return self.connection.commit()
+    def reconnect(self):
+        self.connection = psycopg2.connect(
+                host=db_host,
+                port=db_port,
+                database=db_name,
+                user=db_user,
+                password=db_password
+            )
+
+conn = DatabaseConnection()
 
 app = Flask(__name__)
 cors = CORS(app)
