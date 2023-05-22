@@ -1,15 +1,10 @@
-from flask import Flask, render_template, request, json
+from flask import Flask, request, json
 import joblib
 import re
-from flask_cors import CORS, cross_origin
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.feature_extraction.text import CountVectorizer
+from flask_cors import CORS
 from sklearn.metrics.pairwise import cosine_similarity
 from dotenv import load_dotenv
 
-
-import numpy as np
-import pandas as pd
 import os
 import psycopg2
 
@@ -168,5 +163,4 @@ def getImageFromURL(url):
     return image
         
 if __name__ == '__main__':
-    print(getImageFromURL(""))
-    # app.run(port=5000, debug=True)
+    app.run(debug=True, port=os.getenv("PORT", default=5000))
