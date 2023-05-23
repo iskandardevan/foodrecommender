@@ -144,7 +144,7 @@ def success():
 
 # API GET DAFTAR PANGAN BUMBU
 @app.route("/daftarbahanbumbu", methods=['GET'])
-def pangan():
+def panganbumbu():
     if request.method == 'GET':
         cursor = conn.cursor()
         cursor.execute(f"SELECT * FROM bahan WHERE kelompok = 'bumbu'")
@@ -172,7 +172,7 @@ def pangan():
 
 # API GET DAFTAR PANGAN SAYUR
 @app.route("/daftarbahansayur", methods=['GET'])
-def pangan():
+def pangansayur():
     if request.method == 'GET':
         cursor = conn.cursor()
         cursor.execute(f"SELECT * FROM bahan WHERE kelompok = 'sayur'")
@@ -198,9 +198,9 @@ def pangan():
         return "Unsupported Request Method"
     
 
-# API GET DAFTAR PANGAN
+# API GET DAFTAR PANGAN TAMBAHAN
 @app.route("/daftarbahantambahan", methods=['GET'])
-def pangan():
+def pangantambahan():
     if request.method == 'GET':
         cursor = conn.cursor()
         cursor.execute(f"SELECT * FROM bahan WHERE kelompok = 'tambahan'")
@@ -226,25 +226,5 @@ def pangan():
         return "Unsupported Request Method"
     
 
-def getImageFromURL(url):
-    # scrape image from url using beautifulsoup
-    import requests
-    from bs4 import BeautifulSoup
-
-    url = 'https://cookpad.com/id/resep/13068090-ayam-goreng-kremes'
-    userAgentWindows = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 \
-        (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36'
-
-    #  set user agent
-    headers = {'User-Agent': userAgentWindows}
-    page = requests.get(url, headers=headers)
-
-    soup = BeautifulSoup(page.content, 'html.parser')
-
-    # <img alt="Jus Jeruk foto resep utama" width="680" height="482" data-original="https://img-global.cpcdn.com/recipes/c4829ec1a24b3a27/680x482cq70/jus-jeruk-foto-resep-utama.jpg" data-src="https://img-global.cpcdn.com/recipes/c4829ec1a24b3a27/680x482cq70/jus-jeruk-foto-resep-utama.jpg" class=" lazyloaded" src="https://img-global.cpcdn.com/recipes/c4829ec1a24b3a27/680x482cq70/jus-jeruk-foto-resep-utama.jpg">
-    print(soup.prettify())
-    image = soup.find_all('img')
-    return image
-        
 if __name__ == '__main__':
     app.run(debug=True, port=os.getenv("PORT", default=5000))
