@@ -142,12 +142,68 @@ def success():
     else:
         return "Unsupported Request Method"
 
+# API GET DAFTAR PANGAN BUMBU
+@app.route("/daftarbahanbumbu", methods=['GET'])
+def pangan():
+    if request.method == 'GET':
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT * FROM bahan WHERE kelompok = 'bumbu'")
+        record = cursor.fetchall()
+        # list pangan
+        pangan = []
+        for i in range(len(record)):
+            # menambahkan resep ke list resep 
+            res = {
+                'id': str(i),
+                'nama_pangan': record[i][1],
+                # 'nama_pangan': database_pangan.iloc[i,0],
+            }
+            pangan.append(res)
+        response = app.response_class(
+            status=200,
+            mimetype='application/json',
+            response=json.dumps(pangan)
+        )
+        return response
+        
+    else:
+        return "Unsupported Request Method"
+    
+
+# API GET DAFTAR PANGAN SAYUR
+@app.route("/daftarbahansayur", methods=['GET'])
+def pangan():
+    if request.method == 'GET':
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT * FROM bahan WHERE kelompok = 'sayur'")
+        record = cursor.fetchall()
+        # list pangan
+        pangan = []
+        for i in range(len(record)):
+            # menambahkan resep ke list resep 
+            res = {
+                'id': str(i),
+                'nama_pangan': record[i][1],
+                # 'nama_pangan': database_pangan.iloc[i,0],
+            }
+            pangan.append(res)
+        response = app.response_class(
+            status=200,
+            mimetype='application/json',
+            response=json.dumps(pangan)
+        )
+        return response
+        
+    else:
+        return "Unsupported Request Method"
+    
+
 # API GET DAFTAR PANGAN
 @app.route("/daftarbahantambahan", methods=['GET'])
 def pangan():
     if request.method == 'GET':
         cursor = conn.cursor()
-        cursor.execute(f"SELECT * FROM bahan")
+        cursor.execute(f"SELECT * FROM bahan WHERE kelompok = 'tambahan'")
         record = cursor.fetchall()
         # list pangan
         pangan = []
