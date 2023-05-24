@@ -20,32 +20,16 @@ db_password = os.getenv("DB_PASSWORD")
 
 
 class DatabaseConnection:
-    _instance = None
+    connection = None
 
-    def __new__(cls):
-        if not cls._instance:
-            cls._instance = super().__new__(cls)
-        return cls._instance
-
-    def __init__(self):
-        if not hasattr(self, "connection"):
-            # Replace the connection details with your own
-            self.connection = psycopg2.connect(
-                host=db_host,
-                port=db_port,
-                database=db_name,
-                user=db_user,
-                password=db_password
-            )
-            print(f"Database connected successfully to {db_host} with db name {db_name} ")
     def cursor(self):
         # check if connection is closed then reconnect
         if self.connection.closed != 0:
-            self.reconnect()
+            self.connect()
         return self.connection.cursor()
     def commit(self):
         return self.connection.commit()
-    def reconnect(self):
+    def connect(self):
         self.connection = psycopg2.connect(
                 host=db_host,
                 port=db_port,
@@ -53,8 +37,20 @@ class DatabaseConnection:
                 user=db_user,
                 password=db_password
             )
+        print(f"Connected to {db_name} database")
+    def close(self):
+        print(f"Connection to {db_name} database is closed")
+        if self.connection == None:
+            return
 
-conn = DatabaseConnection()
+            
+        return self.connection.close()
+    def get_connection(self):
+        if self.connection == None or self.connection.closed != 0:
+            self.connect()
+        return self.connection
+
+db = DatabaseConnection()
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -87,6 +83,7 @@ def submit():
         query_vec = vectorizer.transform([clean_data]) 
         results = cosine_similarity(model,query_vec).reshape((-1,))
         # print(results, 'INI HASIL')
+        conn = db.get_connection()
         cursor = conn.cursor()
         cursor.execute(f"UPDATE hitrate SET rate = rate + 5")
         conn.commit()
@@ -115,6 +112,8 @@ def submit():
             mimetype='application/json',
             response=json.dumps(resep)
         )
+
+        db.close()
         return response
         
     else:
@@ -126,6 +125,7 @@ def success():
         query = request.get_json()
         print(query['id'], 'INI ID SUCCESS RECOMMENDATION')
         id = query['id']
+        conn = db.get_connection()
         cursor = conn.cursor()
         cursor.execute(f"UPDATE recipes SET successcount = successcount + 1 WHERE id = {id}")
         cursor.execute(f"UPDATE hitrate SET hit = hit + 1")
@@ -138,6 +138,8 @@ def success():
             mimetype='application/json',
             response=json.dumps({'message': 'success'})
         )
+
+        db.close()
         return response
     else:
         return "Unsupported Request Method"
@@ -146,6 +148,7 @@ def success():
 @app.route("/daftarbahanbumbu", methods=['GET'])
 def panganbumbu():
     if request.method == 'GET':
+        conn = db.get_connection()
         cursor = conn.cursor()
         cursor.execute(f"SELECT * FROM bahan WHERE kelompok = 'bumbu'")
         record = cursor.fetchall()
@@ -164,6 +167,8 @@ def panganbumbu():
             mimetype='application/json',
             response=json.dumps(pangan)
         )
+        
+        db.close()
         return response
         
     else:
@@ -174,6 +179,7 @@ def panganbumbu():
 @app.route("/daftarbahansayur", methods=['GET'])
 def pangansayur():
     if request.method == 'GET':
+        conn = db.get_connection()
         cursor = conn.cursor()
         cursor.execute(f"SELECT * FROM bahan WHERE kelompok = 'sayur'")
         record = cursor.fetchall()
@@ -192,6 +198,8 @@ def pangansayur():
             mimetype='application/json',
             response=json.dumps(pangan)
         )
+
+        db.close()
         return response
         
     else:
@@ -202,6 +210,7 @@ def pangansayur():
 @app.route("/daftarbahantambahan", methods=['GET'])
 def pangantambahan():
     if request.method == 'GET':
+        conn = db.get_connection()
         cursor = conn.cursor()
         cursor.execute(f"SELECT * FROM bahan WHERE kelompok = 'tambahan'")
         record = cursor.fetchall()
@@ -220,6 +229,8 @@ def pangantambahan():
             mimetype='application/json',
             response=json.dumps(pangan)
         )
+
+        db.close()
         return response
         
     else:
