@@ -1,9 +1,11 @@
-from flask import Flask, request, json
+from flask import Flask, request, json, session
 import joblib
 import re
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from sklearn.metrics.pairwise import cosine_similarity
 from dotenv import load_dotenv
+
+import uuid
 
 import os
 from psycopg2 import pool
@@ -22,11 +24,13 @@ psql_pool = pool.SimpleConnectionPool(1, 30,
                                                 port=db_port,
                                                 database=db_name,
                                                 user=db_user,
-                                                password=db_password)
+                                                password=db_password,
+                                                sslmode='require')
 
 
 app = Flask(__name__)
-cors = CORS(app)
+cors = CORS(app, resources={r"/*": {"origins": ["http://localhost", "http://localhost:5500", "https://foodrecommender.surge.sh", "https://surge.sh"]}}, supports_credentials=True)
+
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 model = joblib.load(
@@ -49,6 +53,19 @@ def remove_special_chars(text):
 @app.route("/submit", methods=['POST'])
 def submit():
     if request.method == 'POST':
+        rate = 5
+        response = app.response_class(
+            status=200,
+            mimetype='application/json',
+        )
+        sid = ""
+        if request.cookies.get('sid'):
+            print("COOKIE ACTIVE", request.cookies.get('sid'))
+            sid = request.cookies.get('sid')
+        else:
+            response, sid = generate_response_sid(response)
+            print("COOKIE NOT ACTIVE", request.cookies.get('sid'))
+
         query = request.get_json()
         clean_data = remove_special_chars(query['bahan'])
         clean_data = clean_data.lower()
@@ -58,10 +75,20 @@ def submit():
         # print(results, 'INI HASIL')
         conn = psql_pool.getconn()
         cursor = conn.cursor()
-        cursor.execute(f"UPDATE hitrate SET rate = rate + 5")
+        upsertQueryHitrate = """
+            WITH upsert AS (
+                UPDATE hitrate SET rate = rate + %s 
+                WHERE sid = %s
+                RETURNING *
+            )
+            INSERT INTO hitrate (sid, hit, rate)
+            SELECT %s, 0, %s
+            WHERE NOT EXISTS (SELECT * FROM upsert);
+        """
+        cursor.execute(upsertQueryHitrate, (rate, sid, sid, rate))
         conn.commit()
 
-        ids = results.argsort()[-5:][::-1]
+        ids = results.argsort()[-rate:][::-1]
         ids = [id + 1 for id in ids.tolist()]
 
         sql='SELECT * from recipes WHERE id IN %(ids)s'
@@ -80,11 +107,9 @@ def submit():
                 'url': f"https://cookpad.com{data[5]}"
             }
             resep.append(res)
-            response = app.response_class(
-            status=200,
-            mimetype='application/json',
-            response=json.dumps(resep)
-        )
+
+        
+        response.data = json.dumps(resep)
         cursor.close()
         psql_pool.putconn(conn)
         return response
@@ -95,8 +120,20 @@ def submit():
 @app.route("/success", methods=['POST'])
 def success():
     if request.method == 'POST':
+        rate = 5
+        response = app.response_class(
+            status=200,
+            mimetype='application/json',
+        )
+        sid = ""
+        if request.cookies.get('sid'):
+            print("COOKIE ACTIVE", request.cookies.get('sid'))
+            sid = request.cookies.get('sid')
+        else:
+            response, sid = generate_response_sid(response)
+            print("COOKIE NOT ACTIVE", request.cookies.get('sid'))
+
         query = request.get_json()
-        print(query['id'], 'INI ID SUCCESS RECOMMENDATION')
         id = query['id']
         conn = psql_pool.getconn()
         cursor = conn.cursor()
@@ -104,13 +141,20 @@ def success():
         cursor.execute(updateSuccessCountQuery, (str(id),))
         conn.commit()
 
-        cursor.execute(f"UPDATE hitrate SET hit = hit + 1")
+        upsertQueryHitrate = """
+            WITH upsert AS (
+                UPDATE hitrate SET hit = hit + 1 
+                WHERE sid = %s
+                RETURNING *
+            )
+            INSERT INTO hitrate (sid, hit, rate)
+            SELECT %s, 1, %s
+            WHERE NOT EXISTS (SELECT * FROM upsert);
+        """
+
+        cursor.execute(upsertQueryHitrate, (sid, sid, rate))
         conn.commit()
-        response = app.response_class(
-            status=200,
-            mimetype='application/json',
-            response=json.dumps({'message': 'success'})
-        )
+        response.data = json.dumps({'message': 'success'})
 
         cursor.close()
         psql_pool.putconn(conn)
@@ -213,6 +257,24 @@ def pangantambahan():
     else:
         return "Unsupported Request Method"
     
+
+@app.route("/session", methods=['GET'])
+def session():
+    response = app.response_class(
+        status=200,
+        mimetype='application/json',
+    )
+    # check cookie first
+    if request.cookies.get('sid'):
+        return response
+    
+    response, _ = generate_response_sid(response)
+    return response
+
+def generate_response_sid(response):
+    sid = uuid.uuid4()
+    response.set_cookie('sid', str(sid), httponly=True, secure=True, samesite='None', max_age=3600)
+    return response, str(sid)
 
 if __name__ == '__main__':
     app.run(debug=True, port=os.getenv("PORT", default=5000))
