@@ -1,4 +1,4 @@
-from flask import Flask, request, json, session
+from flask import Flask, jsonify, request, json, session
 import joblib
 import re
 from flask_cors import CORS, cross_origin
@@ -270,6 +270,47 @@ def session():
     
     response, _ = generate_response_sid(response)
     return response
+
+# API GET ID RESEP
+@app.route("/detail", methods=['GET'])
+def detail():
+    if request.method == 'GET':
+        id = request.args.get('id')
+        print(id, "INI ID")
+        
+        conn = psql_pool.getconn()
+        cursor = conn.cursor()
+        
+        cursor.execute("SELECT * FROM recipes WHERE id = %s", (id,))
+        record = cursor.fetchall()
+        response = app.response_class(
+            status=200,
+            mimetype='application/json',
+        )
+
+
+        if len(record) == 0:
+            response.status_code = 404
+            return response
+        else:
+            res = {
+                'id': record[0][0],
+                'title': record[0][1],
+                'ingredients': record[0][2],
+                'steps': record[0][3],
+                'likes': record[0][4],
+                'dilihat': record[0][6],
+            }
+            response.data = json.dumps(res)
+
+        
+
+        cursor.close()
+        psql_pool.putconn(conn)
+        return response
+        
+    else:
+        return "Unsupported Request Method" 
 
 def generate_response_sid(response):
     sid = uuid.uuid4()
