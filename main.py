@@ -53,7 +53,7 @@ def remove_special_chars(text):
 @app.route("/submit", methods=['POST'])
 def submit():
     if request.method == 'POST':
-        rate = 5
+        rate = 6
         response = app.response_class(
             status=200,
             mimetype='application/json',
@@ -120,7 +120,7 @@ def submit():
 @app.route("/success", methods=['POST'])
 def success():
     if request.method == 'POST':
-        rate = 5
+        rate = 6
         response = app.response_class(
             status=200,
             mimetype='application/json',

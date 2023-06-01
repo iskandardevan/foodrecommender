@@ -1,0 +1,2 @@
+kuning = [#FF8903]
+merah = [#C1002D]
