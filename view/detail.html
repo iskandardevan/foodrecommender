@@ -58,8 +58,8 @@
     </nav>
     <div id="container-detail" class="row px-20 py-40 ">
         <div class="w-full bg-white border border-gray-200 rounded-lg m-4 shadow">
-            <a href="#">
-                <img class="rounded-t-lg object-cover w-full h-[500px]" src="./assets/img/foto1.jpg" alt="" />
+            <a id="fotomakanan" href="#">
+                <!-- <img class="rounded-t-lg object-cover w-full h-[500px]" src="./assets/img/foto1.jpg"/> -->
             </a>
             <div class="p-5">
                 <a id="judulDetail" href="#">
@@ -67,7 +67,6 @@
                 </a>
             </div>
         </div>
-        
         <div id="detail" class="w-full bg-white border border-gray-200 rounded-lg m-4 shadow">
             <ul  class="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200 rounded-t-lg bg-gray-50 " id="defaultTab" data-tabs-toggle="#defaultTabContent" role="tablist">
                 <li class="mr-2">
@@ -98,16 +97,31 @@
                 <div class="hidden p-4 bg-white rounded-lg md:p-8  " id="likes" role="tabpanel" aria-labelledby="likes-tab">
                     <dl class="grid max-w-screen-xl grid-cols-2 gap-8 p-4 mx-auto text-gray-900 sm:grid-cols-3 xl:grid-cols-6  sm:p-8">
                         <div class="flex flex-col">
-                            <dt class="mb-2 text-3xl font-extrabold">73M+</dt>
-                            <dd class="text-gray-500">Views</dd>
+                            <dt id="viewers" class="mb-2 text-3xl font-extrabold">73M+</dt>
+                            <div class="text-gray-500 flex">
+                                <span class="material-symbols-outlined pr-1">
+                                    visibility
+                                </span>
+                                <dd class="text-gray-500">Likes</dd>
+                            </div> 
                         </div>
                         <div class="flex flex-col">
-                            <dt class="mb-2 text-3xl font-extrabold">100M+</dt>
-                            <dd class="text-gray-500">Likes</dd>
+                            <dt id="likes" class="mb-2 text-3xl font-extrabold">100M+</dt>
+                            <div class="text-gray-500 flex">
+                                <span class="material-symbols-outlined pr-1">
+                                    thumb_up
+                                </span>
+                                <dd class="text-gray-500">Likes</dd>
+                            </div>
                         </div>
                         <div class="flex flex-col">
-                            <dt class="mb-2 text-3xl font-extrabold">1000s</dt>
-                            <dd class="text-gray-500">Bookmarks</dd>
+                            <dt id="bookmark" class="mb-2 text-3xl font-extrabold">1000s</dt>
+                            <div class="text-gray-500 flex">
+                                <span class="material-symbols-outlined pr-1">
+                                    bookmark
+                                </span>
+                                <dd class="text-gray-500">Likes</dd>
+                            </div> 
                         </div>
                     </dl>
                 </div>

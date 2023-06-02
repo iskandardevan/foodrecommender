@@ -451,7 +451,7 @@ function submit() {
             panah.textContent = "arrow_forward_ios";
 
             elementpanah.id = item.id;
-
+            let judul = item.jud
             elementpanah.onclick = function(e) {
                 e.preventDefault();
                 fetch(`${API_URI}/success`, {

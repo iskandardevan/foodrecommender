@@ -15,6 +15,11 @@ function detail() {
         console.log(data, "INI DATA");
         // const doc = getElementById
         const cardJudul = document.getElementById("judulDetail");
+        const kontenerfoto = document.getElementById("fotomakanan");
+        const foto = document.createElement("img");
+        foto.className = "rounded-t-lg object-cover w-full h-[500px]"
+        kontenerfoto.appendChild(foto);
+        foto.src = data.img;
         cardJudul.innerHTML = `
                     <a>
                         <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 ">${data.title}</h5>

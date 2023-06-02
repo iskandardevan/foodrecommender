@@ -300,6 +300,7 @@ def detail():
                 'steps': record[0][3],
                 'likes': record[0][4],
                 'dilihat': record[0][6],
+                'img': record[0][7],
             }
             response.data = json.dumps(res)
 
