@@ -2,6 +2,9 @@ import requests, re, json, lxml, os
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from psycopg2 import pool
+import psycopg2
+import validators
+import time
 
 load_dotenv()
 
@@ -13,7 +16,7 @@ db_user = os.getenv("DB_USER")
 db_password = os.getenv("DB_PASSWORD")
 
 headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
+    "User-Agent": "'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_1) AppleWebKit/602.2.14 (KHTML, like Gecko) Version/10.0.1 Safari/602.2.14"
 }
 
 def crawl_google_images(keyword):
@@ -24,6 +27,7 @@ def crawl_google_images(keyword):
     }
         
     html = requests.get("https://google.com/search", params=params, headers=headers, timeout=30)
+    print(html)
     soup = BeautifulSoup(html.text, "lxml")
     all_script_tags = soup.select("script")
     
@@ -69,7 +73,8 @@ def crawl_google_images(keyword):
 import concurrent.futures
 
 def main():
-    psql_pool = pool.SimpleConnectionPool(1, 30,
+    max_workers = 30
+    psql_pool = pool.SimpleConnectionPool(1, max_workers,
                                                 host=db_host,
                                                 port=db_port,
                                                 database=db_name,
@@ -80,37 +85,76 @@ def main():
     conn = psql_pool.getconn()
 
     cur = conn.cursor()
-    cur.execute("SELECT * FROM recipes")
+    cur.execute("SELECT * FROM recipes Where img IS NULL")
     results = cur.fetchall()
     total_results = len(results)
+    print(f"Total need to be updated: {total_results}")
     total_updated = 0
+    cur.close()
+    psql_pool.putconn(conn)
 
     def update(result):
         id = result[0]
         title = result[1]
-
+        conn = psql_pool.getconn()
+        cur = conn.cursor()
+        print(f"Crawling for {id}-{title}")
         image_url = crawl_google_images(title)
+        print(f"Got {image_url}")
         if image_url:
             print(f"Updating {id}-{title} with {image_url}")
             cur.execute("UPDATE recipes SET img = %s WHERE id = %s", (image_url, id))
             conn.commit()
+            cur.close()
+            psql_pool.putconn(conn)
             return 1
         else:
+            cur.close()
+            psql_pool.putconn(conn)
             return 0
 
-    with concurrent.futures.ThreadPoolExecutor() as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        print("Starting crawling")
         futures = []
+        last_req = time.time()
         for result in results:
+            now = time.time()
+            delay = last_req + 0.600 - now
+            if delay > 0:
+                time.sleep(delay)
             futures.append(executor.submit(update, result))
+            
         
-        total_updated = total_updated + sum(future.result() for future in concurrent.futures.as_completed(futures))
-        print(f"Updated {total_updated} of {total_results} rows")
+        for future in concurrent.futures.as_completed(futures):
+            total_updated = total_updated + future.result()
+            print(f"Updated {total_updated} of {total_results} rows")
+        
 
-    
-    cur.close()
-    psql_pool.putconn(conn)
 
     psql_pool.closeall()
 
 if __name__ == "__main__":
     main()
+    # print(crawl_google_images("ayam"))
+    # psql_pool = pool.SimpleConnectionPool(1, 2,
+    #                                             host=db_host,
+    #                                             port=db_port,
+    #                                             database=db_name,
+    #                                             user=db_user,
+    #                                             password=db_password,
+    #                                             sslmode='require'
+    # )
+    # print(db_host)
+    # conn = psycopg2.connect(
+    #                                             host=db_host,
+    #                                             port=db_port,
+    #                                             database=db_name,
+    #                                             user=db_user,
+    #                                             password=db_password,
+    #                                             sslmode='require'
+    # # )
+    # conn = psql_pool.getconn()
+    # cur = conn.cursor()
+    # cur.execute("SELECT * FROM recipes Where img IS NULL")
+    # results = cur.fetchall()
+    # print(len(results))

@@ -12,20 +12,19 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500&display=swap" rel="stylesheet">
     <script src="script.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-element-bundle.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="bundle.js"></script>
     <!-- title web -->
     <title>Food Recommender</title>
-    <link rel="icon" href="https://i.imgur.com/v1aQxzu.png" type="image/ico">
+    <link rel="icon" href="./assets/logofr.png" type="image/ico">
 </head>
 <body class="bg-gray-200 no-scrollbar">
     <nav class="bg-[#C1002D] fixed w-full z-20 top-0 left-0 border-b border-red-600">
         <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-            <a class="flex items-center">
-                <img src="assets/foodrecomlogo.png" class="h-12 mr-2" alt="logo">
+            <a  href="./index.html" class="flex items-center cursor-pointer">
+                <img src="./assets/logofr.png" class="h-12 mr-2" alt="logo">
                 <span class="self-center text-2xl font-semibold text-white whitespace-nowrap dark:text-white">Recommender</span>
             </a>
             <!-- <div class="md:order-2 items-center justify-center"> -->
@@ -47,45 +46,45 @@
                         <a href="./index.html" class="block py-2 pl-3 pr-4 rounded md:p-0 hover:text-white text-gray-300 border-gray-700" aria-current="page">Home</a>
                     </li> 
                     <li>
-                        <a href="#result" class="block py-2 pl-3 pr-4 rounded md:p-0 hover:text-white text-gray-300 border-gray-700">Result</a>
+                        <a href="#recommender" class="block py-2 pl-3 pr-4 rounded md:p-0 hover:text-white text-gray-300 border-gray-700">Recommender</a>
                     </li>
-                    <li>
-                        <a target="_blank" href="https://www.linkedin.com/in/iskandardevanto/" class="block py-2 pl-3 pr-4 rounded md:p-0 hover:text-white text-gray-300 border-gray-700">Contact</a>
-                    </li>
+                    <!-- <li>
+                        <a href="/BE/view/about.html" class="block py-2 pl-3 pr-4 rounded md:p-0 hover:text-white text-gray-300 border-gray-700">Contact</a>
+                    </li> -->
                 </ul>
             </div>
         </div>
     </nav>
 
-<section class="bg-center bg-no-repeat bg-[url('./assets/img/foto1.jpg')] bg-gray-500 bg-blend-multiply">
-    <div class="px-4 mx-auto max-w-screen-xl text-center py-24 lg:py-56">
-        <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-white md:text-5xl lg:text-6xl">Aplikasi Pemberi Rekomendasi Resep Masakan Berdasarkan Bahan yang Tersedia</h1>
-        <p class="mb-8 text-lg font-normal text-gray-300 lg:text-xl sm:px-16 lg:px-48">Selamat datang di aplikasi kami yang inovatif untuk mencari inspirasi masakan! Dengan menggunakan sistem pemberi rekomendasi kami, Anda dapat menemukan lima resep masakan lezat berdasarkan bahan yang tersedia di dapur Anda. Tak perlu bingung lagi memutuskan apa yang akan dimasak, cukup masukkan bahan yang Anda miliki, dan kami akan memberikan rekomendasi yang cocok untuk Anda. Segera temukan kelezatan dalam setiap hidangan yang Anda sajikan!</p>
-        <div class="flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
-            <a target="_blank" href="https://github.com/iskandardevan" class="w-32 inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-transparent hover:bg-red-800 focus:ring-4 focus:ring-red-300">
-                About </a>
-            <a href="#" class="inline-flex justify-center w-32 hover:text-red-900 items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg border border-white hover:bg-red-100 focus:ring-4 focus:ring-red-400">
-                Learn more
-            </a>  
+    <section class="bg-center bg-no-repeat bg-[url('./assets/img/foto1.jpg')] bg-gray-500 bg-blend-multiply">
+        <div class="px-4 mx-auto max-w-screen-xl text-center py-24 lg:py-56">
+            <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-white md:text-5xl lg:text-6xl">Aplikasi Pemberi Rekomendasi Resep Masakan Berdasarkan Bahan yang Tersedia</h1>
+            <p class="mb-8 text-lg font-normal text-gray-300 lg:text-xl sm:px-16 lg:px-48">Selamat datang di aplikasi kami yang inovatif untuk mencari inspirasi masakan! Dengan menggunakan sistem pemberi rekomendasi kami, Anda dapat menemukan lima resep masakan lezat berdasarkan bahan yang tersedia di dapur Anda. Tak perlu bingung lagi memutuskan apa yang akan dimasak, cukup masukkan bahan yang Anda miliki, dan kami akan memberikan rekomendasi yang cocok untuk Anda. Segera temukan kelezatan dalam setiap hidangan yang Anda sajikan!</p>
+            <div class="flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
+                <a target="_blank" href="./about.html" class="w-32 inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-transparent hover:bg-red-800">
+                    About </a>
+                <a href="#recommender" class="inline-flex justify-center w-32 hover:text-red-900 items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg border border-white hover:bg-red-100">
+                    Learn more
+                </a>  
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
-    <div class="w-full max-w-screen-xl mx-auto p-4 md:py-8 ">   
-        <div class="w-full bg-white border border-gray-200 rounded-lg p-10 shadow">
+    <div id="recommender" class="w-full max-w-screen-xl mx-auto p-4 md:py-8">   
+        <div class="bg-white border border-gray-200 rounded-lg p-10 shadow">
             <div class="space-y-10" >
                 <h1 class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-brown-500 md:text-5xl lg:text-6xl text-gray-700 text-center">Sebutkan, Pilih, Hidangkan!</h1>
                 <!-- <p class="text-center mb-6 text-lg font-normal rounded-lg lg:text-xl sm:px-16 xl:px-48 text-black bg-contain" style="background-image: url(./assets/img/foto5.jpg)">Selamat datang di aplikasi kami yang inovatif untuk mencari inspirasi masakan! Dengan menggunakan sistem pemberi rekomendasi kami, Anda dapat menemukan lima resep masakan lezat berdasarkan bahan yang tersedia di dapur Anda. Tak perlu bingung lagi memutuskan apa yang akan dimasak, cukup masukkan bahan yang Anda miliki, dan kami akan memberikan rekomendasi yang cocok untuk Anda. Segera temukan kelezatan dalam setiap hidangan yang Anda sajikan!</p> -->
                 <div id="search">
                     <div class="flex">
                         <div class="ml-8 relative w-full">
-                            <input type="search" id="search-dropdown" class="block p-2.5 w-full pl-10 z-20 text-sm focus:outline focus:ring-0 rounded-l-full border-r-red-800 border bg-[#C1002D] hover:bg-red-800 hover:placeholder:text-white border-l-[#C1002D] border-[#C1002D] placeholder-white text-white" placeholder="Tulis bahan yang tersedia">
+                            <input type="search" id="search-dropdown" class="block p-2.5 w-full pl-10 z-20 text-sm rounded-l-full border-r-red-800 border bg-[#C1002D] hover:bg-red-800 hover:placeholder:text-white border-l-[#C1002D] border-[#C1002D] placeholder-white text-white" placeholder="Tulis bahan yang tersedia">
                             <button type="" class="absolute top-0 left-0 p-2.5 text-sm font-medium text-white ">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                                 <span class="sr-only">Search</span>
                             </button>
                         </div>
-                        <button id="dropdown-button" data-dropdown-toggle="dropdown" class="mr-8 flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center border rounded-r-full bg-[#C1002D] border-l-red-800 hover:bg-red-800 hover:text hover:placeholder:text-[#C1002D] border-l-[#C1002D] border-[#C1002D] placeholder-white text-white " type="button">Bumbu<svg aria-hidden="true" class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></button>
+                        <button id="dropdown-button" data-dropdown-toggle="dropdown" class="mr-8 flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center border rounded-r-full bg-[#C1002D] hover:bg-red-800 hover:text hover:placeholder:text-[#C1002D] border-l-[#C1002D] border-[#C1002D] placeholder-white text-white " type="button">Bumbu<svg aria-hidden="true" class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></button>
                         <div id="dropdown" class="z-10 hidden  divide-y divide-gray-100 rounded-xl shadow w-44 bg-[#C1002D]">
                             <ul id="dropdown-ul" class="py-2 text-sm text-gray-200" aria-labelledby="dropdown-button"> 
                             </ul>
@@ -192,6 +191,7 @@
             </div> 
         </div> 
     </div>
+    
     <footer class="bg-white rounded-lg shadow m-4">
         <div class="w-full max-w-screen-xl mx-auto p-4 md:py-8">
             <div class="sm:flex sm:items-center sm:justify-between">
@@ -201,13 +201,13 @@
                 </a>
                 <ul class="flex flex-wrap items-center mb-6 text-sm font-medium text-gray-500 sm:mb-0  ">
                     <li>
-                        <a target="_blank" target="_blank" href="https://telkomuniversity.ac.id" class="mr-4 hover:underline md:mr-6 ">About</a>
+                        <a target="_blank" href="./about.html" class="mr-4 hover:underline md:mr-6 ">About</a>
                     </li> 
                     <li>
                         <a target="_blank" href="https://telkomuniversity.ac.id" class="mr-4 hover:underline md:mr-6 ">Licensing</a>
                     </li>
                     <li>
-                        <a target="_blank" href="https://telkomuniversity.ac.id" class="hover:underline">Contact</a>
+                        <a target="_blank" href="./about.html" class="hover:underline">Contact</a>
                     </li>
                 </ul>
             </div>
