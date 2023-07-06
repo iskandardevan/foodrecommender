@@ -1,5 +1,5 @@
-// const API_URI = "https://web-production-a66f.up.railway.app"
-const API_URI = "http://127.0.0.1:5000"
+const API_URI = "https://site--foodrecommender--ttfqvxd6jd2n.code.run/"
+// const API_URI = "http://127.0.0.1:5000"
 
 const BahanBumbu = "Bumbu";
 const BahanSayur = "Sayur";
