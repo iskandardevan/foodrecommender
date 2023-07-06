@@ -1,5 +1,5 @@
-const API_URI = "https://web-production-a66f.up.railway.app"
-// const API_URI = "http://127.0.0.1:5000"
+// const API_URI = "https://web-production-a66f.up.railway.app"
+const API_URI = "http://127.0.0.1:5000"
 
 // function detail
 function detail() {
@@ -12,14 +12,14 @@ function detail() {
         credentials: "include",
     }).then(response => response.json())
     .then(data => {
-        console.log(data, "INI DATA");
+        // console.log(data, "INI DATA");
         // const doc = getElementById
         const cardJudul = document.getElementById("judulDetail");
         const kontenerfoto = document.getElementById("fotomakanan");
         const foto = document.createElement("img");
         foto.className = "rounded-t-lg object-cover w-full h-[500px]"
         kontenerfoto.appendChild(foto);
-        foto.src = data.img;
+        foto.src = data.img ?? "https://th.bing.com/th/id/OIP.dqnTW9rV5MTVgq3423YO2wHaE8?pid=ImgDet&rs=1";
         cardJudul.innerHTML = `
                     <a>
                         <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 ">${data.title}</h5>

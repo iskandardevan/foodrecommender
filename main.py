@@ -29,7 +29,7 @@ psql_pool = pool.SimpleConnectionPool(1, 30,
 
 
 app = Flask(__name__)
-cors = CORS(app, resources={r"/*": {"origins": ["http://localhost", "http://localhost:5500", "https://foodrecommender.surge.sh", "https://surge.sh"]}}, supports_credentials=True)
+cors = CORS(app, resources={r"/*": {"origins": ["http://localhost", "http://localhost:5500", "http://http://127.0.0.1:5500", "http://localhost:5000", "https://foodrecommender.surge.sh", "https://surge.sh"]}}, supports_credentials=True)
 
 app.config['CORS_HEADERS'] = 'Content-Type'
 
@@ -319,4 +319,4 @@ def generate_response_sid(response):
     return response, str(sid)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=os.getenv("PORT", default=5000))
+    app.run(debug=True, port=os.getenv("PORT", default=80))

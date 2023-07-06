@@ -5,6 +5,17 @@ from psycopg2 import pool
 import psycopg2
 import validators
 import time
+from tqdm import tqdm
+
+DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1117104786412675183/AWTj_sC_WaZyE_POulxVo5bqFTJlCauAMFD488R3mWO68CENvKA7lD1GTaECJmqYwJRV"
+
+def send_discord_webhook(message):
+    userId = "388263469964722176"
+    messagePayload = f"<@{userId}> {message}"
+    payload = {
+        "content": messagePayload
+    }
+    requests.post(DISCORD_WEBHOOK_URL, data=payload)
 
 load_dotenv()
 
@@ -16,7 +27,7 @@ db_user = os.getenv("DB_USER")
 db_password = os.getenv("DB_PASSWORD")
 
 headers = {
-    "User-Agent": "'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_1) AppleWebKit/602.2.14 (KHTML, like Gecko) Version/10.0.1 Safari/602.2.14"
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
 }
 
 def crawl_google_images(keyword):
@@ -27,7 +38,7 @@ def crawl_google_images(keyword):
     }
         
     html = requests.get("https://google.com/search", params=params, headers=headers, timeout=30)
-    print(html)
+    # print(html)
     soup = BeautifulSoup(html.text, "lxml")
     all_script_tags = soup.select("script")
     
@@ -60,17 +71,24 @@ def crawl_google_images(keyword):
     ]
             
     for index, (metadata, thumbnail, original) in enumerate(zip(soup.select('.isv-r.PNCib.MSM1fd.BUooTd'), thumbnails, full_res_images), start=1):
+        title = ""
+        link = ""
+        elm = metadata.select_one(".VFACy.kGQAp.sMi44c.lNHeqe.WGvvNb")
+        if elm is not None:
+            title = elm["title"]
+            link = elm["href"]
+        if link == "":
+            continue
         google_images.append({
-            "title": metadata.select_one(".VFACy.kGQAp.sMi44c.lNHeqe.WGvvNb")["title"],
-            "link": metadata.select_one(".VFACy.kGQAp.sMi44c.lNHeqe.WGvvNb")["href"],
+            "title": title,
+            "link": link,
             "source": metadata.select_one(".fxgdke").text,
             "thumbnail": thumbnail,
             "original": original
         })
+    
+    return google_images[0]["original"] if google_images else None, html.status_code
 
-    return google_images[0]["original"] if google_images else None
-
-import concurrent.futures
 
 def main():
     max_workers = 30
@@ -93,48 +111,59 @@ def main():
     cur.close()
     psql_pool.putconn(conn)
 
-    def update(result):
+    pbar = tqdm(total=total_results)
+    last_request = time.time()
+    error_too_many_request_count = 0
+    error_invalid_url_count = 0
+    for result in results:
         id = result[0]
         title = result[1]
         conn = psql_pool.getconn()
         cur = conn.cursor()
-        print(f"Crawling for {id}-{title}")
-        image_url = crawl_google_images(title)
-        print(f"Got {image_url}")
+        # print(f"Crawling for {id}-{title}")
+        defaultDelay = 0.600
+        delay = defaultDelay - (time.time() - last_request)
+        image_url, status_code = crawl_google_images(title)
+        last_request = time.time()
+        truncated_text = ""
         if image_url:
-            print(f"Updating {id}-{title} with {image_url}")
+            # print(f"Updating {id}-{title} with {image_url}")
             cur.execute("UPDATE recipes SET img = %s WHERE id = %s", (image_url, id))
             conn.commit()
-            cur.close()
-            psql_pool.putconn(conn)
-            return 1
+            total_updated = total_updated + 1
+            pbar.update(1)
+            text = image_url
+            modified_url = text.replace("https://", "")
+            truncated_text = modified_url[:10] + "..."
         else:
-            cur.close()
-            psql_pool.putconn(conn)
-            return 0
+            error_invalid_url_count = error_invalid_url_count + 1
+            if error_invalid_url_count % 4 == 0:
+                send_discord_webhook(f"Error 429: {error_too_many_request_count} || Error URL: {error_invalid_url_count}")
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-        print("Starting crawling")
-        futures = []
-        last_req = time.time()
-        for result in results:
-            now = time.time()
-            delay = last_req + 0.600 - now
-            if delay > 0:
-                time.sleep(delay)
-            futures.append(executor.submit(update, result))
-            
+
+        if status_code == 429:
+            error_too_many_request_count = error_too_many_request_count + 1
+            if error_too_many_request_count % 4 == 0:
+                send_discord_webhook(f"Error 429: {error_too_many_request_count} || Error URL: {error_invalid_url_count}")
         
-        for future in concurrent.futures.as_completed(futures):
-            total_updated = total_updated + future.result()
-            print(f"Updated {total_updated} of {total_results} rows")
         
-
-
+        pbar.set_description(f"{id}-{truncated_text} || Error 429: {error_too_many_request_count} || Error URL: {error_invalid_url_count}")
+        cur.close()
+        psql_pool.putconn(conn)
+        
+        # print(f"Updated {total_updated} of {total_results} rows")
+        if delay > 0:
+            time.sleep(delay)
+    pbar.close()
     psql_pool.closeall()
 
 if __name__ == "__main__":
-    main()
+    send_discord_webhook(f"Crawling started at {time.time()}")
+    try:
+        main()
+    except Exception as e:
+        send_discord_webhook(f"Error: {e}")
+    # main()
     # print(crawl_google_images("ayam"))
     # psql_pool = pool.SimpleConnectionPool(1, 2,
     #                                             host=db_host,

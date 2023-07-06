@@ -1,5 +1,5 @@
-const API_URI = "https://web-production-a66f.up.railway.app"
-// const API_URI = "http://127.0.0.1:5000"
+// const API_URI = "https://web-production-a66f.up.railway.app"
+const API_URI = "http://127.0.0.1:5000"
 
 const BahanBumbu = "Bumbu";
 const BahanSayur = "Sayur";
@@ -23,6 +23,8 @@ let daftarBahan = {
     [BahanSayur]: [],
     [BahanTambahan]: []
 }
+
+let itemsClicked = {}
 
 const loadingElm = `
     <div class=" flex items-center justify-center w-48 h-[360px] text-sm font-medium border rounded-lg bg-gray-300 border-white-600 text-yellow-500 shadow">
@@ -79,15 +81,15 @@ const loadingFunction = (idParentElm, idULElm, isLoading) => {
     const ulElm = document.getElementById(idULElm);
 
     // create loadingElm from string
-    const parentLoadingElm = document.createElement('div');
-    parentLoadingElm.className = "loading-elm";
-    parentLoadingElm.innerHTML = loadingElm;
+    // const parentLoadingElm = document.createElement('div');
+    // parentLoadingElm.className = "loading-elm";
+    // parentLoadingElm.innerHTML = loadingElm;
     
 
     if (isLoading) {
         // add class hidden
-        ulElm.classList.add("hidden");
-        parentElm.appendChild(parentLoadingElm);
+        // ulElm.classList.add("hidden");
+        // parentElm.appendChild(parentLoadingElm);
     }
 
     if (!isLoading) {
@@ -454,39 +456,40 @@ function submit() {
             let judul = item.jud
             elementpanah.onclick = function(e) {
                 e.preventDefault();
-                fetch(`${API_URI}/success`, {
-                    method: "POST",
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        id: elementpanah.id,
-                    }),
-                    
-                }).then(() => {
-                    
-                })
-
-                // disable a button
-                const submitbtn = document.getElementById(elementpanah.id);
-                submitbtn.onclick = function(e) {
-                    e.preventDefault();
+                const isAlreadyClicked = itemsClicked[elementpanah.id];
+                if (!isAlreadyClicked) {
+                    fetch(`${API_URI}/success`, {
+                        method: "POST",
+                        credentials: "include",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            id: elementpanah.id,
+                        }),
+                        
+                    })
                 }
-                submitbtn.classList.remove("bg-[#C1002D]");
-                submitbtn.classList.add("bg-gray-600");
-                // text pudar
-                submitbtn.classList.remove("text-white");
-                submitbtn.classList.add("text-gray-400");
-                submitbtn.classList.remove("hover:bg-red-800");
-                submitbtn.classList.remove("focus:ring-red-900");
-                submitbtn.classList.remove("focus:ring-4");
-                submitbtn.classList.remove("focus:outline-none");
-                submitbtn.classList.remove("cursor-pointer");
-                submitbtn.classList.add("cursor-not-allowed");
-                submitbtn.childNodes[0].classList.remove("hover:underline");
+                
+                // disable a button
+                // const submitbtn = document.getElementById(elementpanah.id);
+                // submitbtn.onclick = function(e) {
+                //     e.preventDefault();
+                // }
+                // submitbtn.classList.remove("bg-[#C1002D]");
+                // submitbtn.classList.add("bg-gray-600");
+                // // text pudar
+                // submitbtn.classList.remove("text-white");
+                // submitbtn.classList.add("text-gray-400");
+                // submitbtn.classList.remove("hover:bg-red-800");
+                // submitbtn.classList.remove("focus:ring-red-900");
+                // submitbtn.classList.remove("focus:ring-4");
+                // submitbtn.classList.remove("focus:outline-none");
+                // submitbtn.classList.remove("cursor-pointer");
+                // submitbtn.classList.add("cursor-not-allowed");
+                // submitbtn.childNodes[0].classList.remove("hover:underline");
 
-
+                itemsClicked[elementpanah.id] = true;
                 window.open(`./detail.html?id=${elementpanah.id}`, "_blank");
                 
             }
